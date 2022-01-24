@@ -1,4 +1,3 @@
-from operator import itemgetter
 import os
 import cv2
 import numpy as np
@@ -14,8 +13,10 @@ def obrada_videa(video_putanja):
     ret_val, prvi_frejm = cap.read()
 
     p_vertikale = racunanje_vertikala(prvi_frejm)
-    p_leva_strana = [p_vertikale[16], p_vertikale[17], p_vertikale[18], p_vertikale[19]]
-    p_desna_strana = [p_vertikale[380], p_vertikale[381], p_vertikale[382]]
+    p_leva_strana = [p_vertikale[15], p_vertikale[16], p_vertikale[17]]
+    p_leva_unutrs = [p_vertikale[35], p_vertikale[36], p_vertikale[37]]
+    p_desna_strana = [p_vertikale[379], p_vertikale[380], p_vertikale[381], p_vertikale[382]]
+    p_desna_unutrs = [p_vertikale[359], p_vertikale[360], p_vertikale[361], p_vertikale[362]]
 
     while True:
         broj_frejma += 1
@@ -27,15 +28,19 @@ def obrada_videa(video_putanja):
 
         trenutne_vertikale = racunanje_vertikala(frejm)
 
-        t_leva_strana = [trenutne_vertikale[16], trenutne_vertikale[17], trenutne_vertikale[18]]
-        t_desna_strana = [trenutne_vertikale[380], trenutne_vertikale[381], trenutne_vertikale[382]]
+        t_leva_strana = [trenutne_vertikale[15], trenutne_vertikale[16], trenutne_vertikale[17]]
+        t_leva_unutrs = [trenutne_vertikale[35], trenutne_vertikale[36], trenutne_vertikale[37]]
+        t_desna_strana = [trenutne_vertikale[379], trenutne_vertikale[380], trenutne_vertikale[381], trenutne_vertikale[382]]
+        t_desna_unutrs = [trenutne_vertikale[359], trenutne_vertikale[360], trenutne_vertikale[361], trenutne_vertikale[362]]
 
-        if(p_leva_strana != t_leva_strana): broj_udaraca += 1
-        if(p_desna_strana != t_desna_strana): broj_udaraca += 1
+        if(p_leva_strana != t_leva_strana and p_leva_unutrs == t_leva_unutrs): broj_udaraca += 1
+        if(p_desna_strana != t_desna_strana and p_desna_unutrs == t_desna_unutrs): broj_udaraca += 1
 
         p_vertikale = trenutne_vertikale
-        p_leva_strana = [p_vertikale[16], p_vertikale[17], p_vertikale[18]]
-        p_desna_strana = [p_vertikale[380], p_vertikale[381], p_vertikale[382]]
+        p_leva_strana = [p_vertikale[15], p_vertikale[16], p_vertikale[17]]
+        p_leva_unutrs = [p_vertikale[35], p_vertikale[36], p_vertikale[37]]
+        p_desna_strana = [p_vertikale[379], p_vertikale[380], p_vertikale[381], p_vertikale[382]]
+        p_desna_unutrs = [p_vertikale[359], p_vertikale[360], p_vertikale[361], p_vertikale[362]]
 
     return broj_udaraca
 
@@ -56,6 +61,9 @@ def racunanje_vertikala(frejm):
 
     vertikale = {}  # racunam maks. visinu na svakoj x koordinati na osnovu slike koju je izbacio canny detektor
     for par in coordinates:
+        if par[0] >= 405 and par[0] <= 427:
+            continue
+
         if par[1] not in vertikale:
             vertikale[par[1]] = 1
         else:
